@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<input type="text" id="jsonInput">
+<button onclick="createDictionaryFromInput()">Parse JSON</button>
+  <script>
+    async function saveNewDocumentWithCustomId(collectionId, documentId, firebaseConfig, data) {
+      // Dynamically import Firebase libraries
+      const [firebase, { getFirestore, collection, setDoc, doc }] = await Promise.all([
+        import("https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js"),
+        import("https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js")
+      ]);
+
+	
+      // Initialize Firebase
+      const app = firebase.initializeApp(firebaseConfig); // Replace with your configuration
+      const db = getFirestore(app);
+
+	  setDoc(doc(collection(db, collectionId), documentId), data, {merge: true})
+        .then((docRef) => {
+          console.log("Document written with ID:", docRef.id);
+        })
+        .catch((error) => {
+          console.error("Error adding document:", error);
+        });
+    }
+	
+	function createDictionaryFromInput() {
+	  const inputField = document.getElementById('jsonInput');
+	  const jsonString = inputField.value;
+
+	  try {
+		const dictionary = JSON.parse(jsonString);
+		saveNewDocumentWithCustomId('your_collection_name', 'My Test', dictionary, { Test3: 'Other' });
+		console.log(dictionary);
+	  } catch (error) {
+		console.error("Error parsing JSON:", error);
+	  }
+	  console.log("End of function");
+	}
+	
+	// Assuming you have an HTML element with the ID "jsonInput"
+	//const jsonInput = document.getElementById('jsonInput');
+
+	// Add an event listener to the input field
+	//jsonInput.addEventListener('input', createDictionaryFromInput);
+	
+    // Example usage
+    //saveNewDocumentWithCustomId('your_collection_name', 'My Test', firebaseConfig, { Test2: 'Other' });
+  </script>
+</body>
+</html>
